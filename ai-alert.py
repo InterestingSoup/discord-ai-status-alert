@@ -13,8 +13,6 @@ load_dotenv(dotenv_path="/home/qcloud/psn-alert/.env")
 # === CONFIG ===
 NPSSO_TOKEN = "BXo4xHnrCSGwsMHDieztt8wS3pyqY5m5vSZI283r8XP2tMRYVvWPqWAxOckqoEHW"
 DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1373157118017802330/itdRhbPhep2_1HmN_sy8XEeaqlpBujD6Maut8dZ0RUzPL4oEYOrwnYdo5zZlKMm5sJQi"
-ALERT_STATE_FILE_FOUNDERS = "/home/qcloud/psn-alert/.last_founder_alert.json"
-ALERT_STATE_FILE_CLAN = "/home/qcloud/psn-alert/.last_clan_alert.json"
 ALERT_INTERVAL_FOUNDERS = 45 * 60  # 45 minutes for Founders
 ALERT_INTERVAL_CLAN = 120 * 60  # 2 hours for Clan Members
 GROUP_ID = "9b1ba8e02ad17050e3fa4351685b48c40688e8ba-351"
@@ -23,6 +21,10 @@ GROUP_ID = "9b1ba8e02ad17050e3fa4351685b48c40688e8ba-351"
 GPT_AZURE_OPENAI_API_KEY = os.environ.get("GPT_AZURE_OPENAI_API_KEY", "yP7el7NTsS5PMTkoCIIz7qDCe9GpP8olDz9GbISLAoFbSrCbMsTJQQJ99BEACHYHv6XJ3w3AAAAACOGGz9")
 GPT_AZURE_OPENAI_ENDPOINT = os.environ.get("GPT_AZURE_OPENAI_ENDPOINT", "https://moiz-mb596h34-eastus2.cognitiveservices.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview")
 GPT_AZURE_DEPLOYMENT_NAME = os.environ.get("GPT_AZURE_DEPLOYMENT_NAME", "gpt-4o")
+
+ALERT_STATE_FILE_FOUNDERS = os.getenv("ALERT_STATE_FILE_FOUNDERS", ".last_founder_alert.json")
+ALERT_STATE_FILE_CLAN = os.getenv("ALERT_STATE_FILE_CLAN", ".last_clan_alert.json")
+
 
 FOUNDERS = [
     "ASamad89",
