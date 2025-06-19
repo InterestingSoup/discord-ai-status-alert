@@ -126,21 +126,35 @@ def generate_image(prompt):
         return None
 
 def send_discord_alert(image_url, message):
-    if image_url:
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-            img_data = requests.get(image_url).content
-            tmp.write(img_data)
-            tmp_path = tmp.name
+    try:
+        if image_url:
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+                img_data = requests.get(image_url).content
+                tmp.write(img_data)
+                tmp_path = tmp.name
 
-        with open(tmp_path, "rb") as f:
-            requests.post(
+            with open(tmp_path, "rb") as f:
+                response = requests.post(
+                    DISCORD_WEBHOOK,
+                    data={"content": message},
+                    files={"file": ("clan_status.png", f, "image/png")},
+                )
+
+            os.remove(tmp_path)
+        else:
+            response = requests.post(
                 DISCORD_WEBHOOK,
-                data={"content": message},
-                files={"file": ("clan_status.png", f, "image/png")},
+                json={"content": message}
             )
-        os.remove(tmp_path)
-    else:
-        requests.post(DISCORD_WEBHOOK, json={"content": message})
+
+        print(f"[DEBUG] Discord POST Status: {response.status_code}")
+        print(f"[DEBUG] Discord POST Response: {response.text}")
+
+        if response.status_code >= 400:
+            print(f"❌ Discord message failed! Code {response.status_code}: {response.text}")
+
+    except Exception as e:
+        print(f"❌ Error sending Discord message: {e}")
 
 def check_and_alert(psnawp, members, last_alert_path, alert_title, alert_interval):
     online_players = []
