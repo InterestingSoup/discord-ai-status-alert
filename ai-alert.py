@@ -176,7 +176,8 @@ def check_and_alert(psnawp, members, last_alert_path, alert_title, alert_interva
     time_since_last = time.time() - last_alert["timestamp"]
 
     if len(current_members) >= 2:
-        if current_members != last_members or time_since_last >= alert_interval:
+        # Only trigger if new members joined (not fewer or same), and interval has passed
+        if len(current_members) > len(last_members) and time_since_last >= alert_interval:
             member_prompts = [PROMPT_MAP[p] for p in current_members if p in PROMPT_MAP]
             character_count = len(member_prompts)
             general_prompt = GENERAL_PROMPT_TEMPLATE.format(count=character_count)
@@ -195,8 +196,8 @@ def check_and_alert(psnawp, members, last_alert_path, alert_title, alert_interva
                 print(f"🤖 Sending AI-generated message: {ai_message}")
                 group.send_message(ai_message)
         else:
-            interval_minutes = alert_interval // 60
-            print(f"Same users online, {alert_title} alert skipped (under {interval_minutes} min).")
+            print(f"🚫 No new users joined or interval too short — {alert_title} alert skipped.")
+            save_last_alert(last_alert_path, current_members)
 
     elif len(current_members) == 0 and last_members != []:
         requests.post(DISCORD_WEBHOOK, json={
@@ -204,8 +205,9 @@ def check_and_alert(psnawp, members, last_alert_path, alert_title, alert_interva
         })
         save_last_alert(last_alert_path, [])
     else:
-        print(f"Only one user online, {alert_title} alert skipped.")
+        print(f"ℹ️ Only one user online — {alert_title} alert skipped.")
         save_last_alert(last_alert_path, current_members)
+
 
 def main():
     psnawp = PSNAWP(npsso_cookie=NPSSO_TOKEN)
